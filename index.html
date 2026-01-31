@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ayush Bhatt - E-Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Light Mode */
+      --primary-dark: #002D62;
+      --secondary-blue: #0077B6;
+      --background-main: #fcfcfc;
+      --background-card: #ffffff;
+      --background-header: #1a2a3a;
+      --text-main: #34495e;
+      --text-light: #f4f7f9;
+      --card-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      --link-hover-bg: #e6f7ff;
+      --particle-color: rgba(0, 119, 182, 0.15);
+      --accent-green: #2ecc71;
+    }
+
+    body.dark-mode {
+      --primary-dark: #64b5f6;
+      --secondary-blue: #00bcd4;
+      --background-main: #121212;
+      --background-card: #1e1e1e;
+      --background-header: #000000;
+      --text-main: #d0d0d0;
+      --text-light: #34495e;
+      --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      --link-hover-bg: #333;
+      --particle-color: rgba(100, 181, 246, 0.1);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.7; 
+      background: var(--background-main);
+      color: var(--text-main);
+      transition: background-color 0.5s, color 0.5s;
+      overflow-x: hidden;
+    }
+    a { color: var(--secondary-blue); text-decoration: none; transition: 0.3s; }
+    
+    #particle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.6;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--background-header) 0%, #0d1621 100%); 
+      color: #fff;
+      padding: 2.5rem 1rem;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+    .header-content {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    h1 { margin: 0; font-weight: 800; letter-spacing: 1px; font-size: 2.8rem; }
+    nav { margin-top: 25px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+    nav a {
+      color: #fff;
+      font-weight: 500;
+      padding: 8px 18px;
+      border-radius: 25px;
+      border: 1px solid rgba(255,255,255,0.15);
+      transition: 0.3s;
+      font-size: 0.9rem;
+    }
+    nav a:hover { background: var(--secondary-blue); border-color: var(--secondary-blue); }
+
+    .theme-switch {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .theme-switch input { display: none; }
+    .theme-switch label {
+      width: 44px;
+      height: 22px;
+      background: #444;
+      border-radius: 22px;
+      position: relative;
+      cursor: pointer;
+    }
+    .theme-switch label::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: 0.3s;
+    }
+    .theme-switch input:checked + label { background: var(--secondary-blue); }
+    .theme-switch input:checked + label::after { transform: translateX(22px); }
+
+    section { padding: 4rem 2rem; max-width: 1100px; margin: auto; }
+    h2 {
+      font-weight: 800;
+      font-size: 2rem;
+      border-left: 6px solid var(--secondary-blue);
+      padding-left: 18px;
+      margin-bottom: 35px;
+      color: var(--primary-dark);
+    }
+
+    .card {
+      background: var(--background-card);
+      padding: 30px;
+      margin-bottom: 25px;
+      border-radius: 16px;
+      box-shadow: var(--card-shadow);
+      transition: 0.3s;
+    }
+    .card:hover { transform: translateY(-5px); }
+
+    /* Grids */
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .item-card {
+      background: var(--background-card);
+      padding: 25px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+    }
+    .btn-action {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: var(--secondary-blue);
+      color: white;
+      border-radius: 10px;
+      font-weight: 600;
+      text-align: center;
+      transition: 0.3s;
+    }
+    .btn-action:hover { background: var(--primary-dark); transform: scale(1.03); }
+    
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--secondary-blue);
+      color: var(--secondary-blue);
+    }
+    .btn-outline:hover { background: var(--secondary-blue); color: white; }
+
+    /* Milestone Tracker */
+    .milestone-container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .milestone {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(0, 119, 182, 0.04);
+      padding: 18px;
+      border-radius: 12px;
+    }
+    .milestone-status {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #ddd;
+      flex-shrink: 0;
+    }
+    .milestone.done .milestone-status { background: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
+    .milestone-info h4 { margin: 0; color: var(--primary-dark); font-size: 1.1rem; }
+    .milestone-info p { margin: 4px 0 0 0; font-size: 0.9rem; opacity: 0.8; }
+
+    .skill-tag {
+      display: inline-block;
+      background: var(--link-hover-bg);
+      color: var(--primary-dark);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    footer {
+      text-align: center;
+      background: var(--background-header);
+      color: white;
+      padding: 2.5rem;
+      font-size: 0.9rem;
+      border-top: 4px solid var(--secondary-blue);
+    }
+
+    @media (max-width: 768px) {
+      section { padding: 2.5rem 1.2rem; }
+      h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particle-canvas"></canvas>
+
+  <header>
+    <div class="header-content">
+      <h1>Ayush Bhatt</h1>
+      <p style="font-weight:300; opacity:0.9;">B.Tech CSE | 4th Semester | Java Developer</p>
+      <nav>
+        <a href="#about">About</a>
+        <a href="#assignments">Assignments</a>
+        <a href="#videos">Videos</a>
+        <a href="#pbl">PBL Tracker</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="theme-switch">
+        <span>🌙</span>
+        <input type="checkbox" id="theme-toggle">
+        <label for="theme-toggle"></label>
+      </div>
+    </div>
+  </header>
+
+  <!-- About Section -->
+  <section id="about">
+    <h2>Profile Summary</h2>
+    <div class="card">
+      <p>
+        I am <b>Ayush Bhatt</b>, a second-year Computer Science Engineering student. I specialize in <b>Java</b> and software architecture, utilizing "vibe coding" methodologies to streamline the development of complex systems.
+      </p>
+      <div style="margin-top: 25px;">
+        <span class="skill-tag">Java SE/EE</span>
+        <span class="skill-tag">OOP Design</span>
+        <span class="skill-tag">File Handling</span>
+        <span class="skill-tag">JDBC</span>
+        <span class="skill-tag">Software Development</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Academic Assignments Section (Generic) -->
+  <section id="assignments">
+    <h2>Academic Assignments</h2>
+    <div class="grid-container">
+      <div class="item-card">
+        <h3>Assignment 1</h3>
+        <p>Documentation and Submission</p>
+        <a href="#" class="btn-action btn-outline">View Document</a>
+      </div>
+      <div class="item-card">
+        <h3>Assignment 2</h3>
+        <p>Documentation and Submission</p>
+        <a href="#" class="btn-action btn-outline">View Document</a>
+      </div>
+      <div class="item-card">
+        <h3>Assignment 3</h3>
+        <p>Documentation and Submission</p>
+        <a href="#" class="btn-action btn-outline">View Document</a>
+      </div>
+      <div class="item-card">
+        <h3>Assignment 4</h3>
+        <p>Documentation and Submission</p>
+        <a href="#" class="btn-action btn-outline">View Document</a>
+      </div>
+      <div class="item-card">
+        <h3>Assignment 5</h3>
+        <p>Documentation and Submission</p>
+        <a href="#" class="btn-action btn-outline">View Document</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXCLUSIVE VIDEO SECTION (Generic) -->
+  <section id="videos" style="background: rgba(0, 119, 182, 0.02); border-radius: 40px; margin: 40px auto;">
+    <h2 style="padding-top: 20px;">Recorded Video Submissions</h2>
+    <div class="grid-container">
+      <div class="item-card" style="border-top: 4px solid var(--secondary-blue);">
+        <h3>Video Submission 1</h3>
+        <p>Project presentation / introduction</p>
+        <a href="#" class="btn-action">▶ Watch Video</a>
+      </div>
+      <div class="item-card" style="border-top: 4px solid var(--secondary-blue);">
+        <h3>Video Submission 2</h3>
+        <p>Project presentation / submission</p>
+        <a href="#" class="btn-action">▶ Watch Video</a>
+      </div>
+      <div class="item-card" style="border-top: 4px solid var(--secondary-blue);">
+        <h3>Video Submission 3</h3>
+        <p>Project presentation / submission</p>
+        <a href="#" class="btn-action">▶ Watch Video</a>
+      </div>
+      <div class="item-card" style="border-top: 4px solid var(--secondary-blue);">
+        <h3>Video Submission 4</h3>
+        <p>Project presentation / submission</p>
+        <a href="#" class="btn-action">▶ Watch Video</a>
+      </div>
+      <div class="item-card" style="border-top: 4px solid var(--secondary-blue);">
+        <h3>Video Submission 5</h3>
+        <p>Project presentation / submission</p>
+        <a href="#" class="btn-action">▶ Watch Video</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PBL Tracker -->
+  <section id="pbl">
+    <h2>PBL Project Tracker</h2>
+    <div class="card">
+      <p>Monitoring development milestones for the Java-based project.</p>
+      <div class="milestone-container">
+        <div class="milestone done">
+          <div class="milestone-status"></div>
+          <div class="milestone-info">
+            <h4>System Architecture</h4>
+            <p>Phase 1 complete.</p>
+          </div>
+        </div>
+        <div class="milestone done">
+          <div class="milestone-status"></div>
+          <div class="milestone-info">
+            <h4>Algorithm Logic</h4>
+            <p>Phase 2 complete.</p>
+          </div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-status"></div>
+          <div class="milestone-info">
+            <h4>Interface Development</h4>
+            <p>Ongoing phase.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Section -->
+  <section id="projects">
+    <h2>Technical Projects</h2>
+    <div class="card">
+      <h3>Priority-Based System Design</h3>
+      <p>Java implementation focusing on efficient data handling and urgency sorting.</p>
+    </div>
+    <div class="card">
+      <h3>Algorithm Development</h3>
+      <p>Complexity-focused scheduling solution developed in C/C++.</p>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <h2>Contact</h2>
+    <div class="card" style="text-align: center;">
+      <p>Email: <b>ayushbhatt.work@gmail.com</b></p>
+      <div style="margin-top: 25px;">
+        <a href="#" class="btn-action" style="width: 200px;">LinkedIn</a>
+        <a href="#" class="btn-action btn-outline" style="width: 200px; margin-left: 10px;">GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Ayush Bhatt | All Rights Reserved</p>
+  </footer>
+
+  <script>
+    // Particle Logic
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function initCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    class Particle {
+      constructor() { this.reset(); }
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.size = Math.random() * 2 + 1;
+      }
+      update() {
+        this.x += this.vx; this.y += this.vy;
+        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+      }
+      draw() {
+        ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--secondary-blue');
+        ctx.globalAlpha = 0.2;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function createParticles() {
+      particles = [];
+      for (let i = 0; i < 70; i++) particles.push(new Particle());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(p => { p.update(); p.draw(); });
+      requestAnimationFrame(animate);
+    }
+
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('change', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+
+    window.addEventListener('resize', initCanvas);
+    initCanvas();
+    createParticles();
+    animate();
+  </script>
+</body>
+</html>
